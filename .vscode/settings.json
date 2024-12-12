@@ -3,5 +3,6 @@
     "comments": "off",
     "strings": "off",
     "other": "off"
-  }
+  },
+  "codium.codeCompletion.enable": true
 }
