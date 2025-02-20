@@ -10,10 +10,10 @@ module.exports.registerUser = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { fullname, email, password } = req.body;
+        const { fullName, email, password } = req.body;
 
-        if (!fullname || !fullname.firstname || !fullname.lastname) {
-            return res.status(400).json({ message: 'Fullname must include firstname and lastname' });
+        if (!fullName || !fullName.firstName || !fullName.lastName) {
+            return res.status(400).json({ message: 'fullName must include firstName and lastName' });
         }
 
         const existingUser = await userModel.findOne({ email });
@@ -24,8 +24,8 @@ module.exports.registerUser = async (req, res, next) => {
         const hashedPassword = await userModel.hashPassword(password);
 
         const user = await userService.createUser({
-            firstname: fullname.firstname,
-            lastname: fullname.lastname,
+            firstName: fullName.firstName,
+            lastName: fullName.lastName,
             email,
             password: hashedPassword
         });
