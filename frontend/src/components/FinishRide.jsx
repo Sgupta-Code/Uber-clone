@@ -1,23 +1,39 @@
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const RidePopUp = (props) => {
-  const {ride} = props;
+const FinishRide = (props) => {
+  const navigate = useNavigate();
 
-  if(!ride || !ride.user || !ride.user.fullName){
-    return null;
+  async function endRide() {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
+      {
+        rideId: props.ride._id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      navigate("/captain-home");
+    }
   }
+
   return (
     <div>
       <h5
         className="p-1 text-center w-[93%] absolute top-0"
         onClick={() => {
-          props.setRidePopupPanel(false);
+          props.setFinishRidePanel(false);
         }}
       >
         <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
       </h5>
-      <h3 className="text-2xl font-semibold mb-5">New Ride Available!</h3>
-      <div className="flex items-center justify-between p-3 bg-yellow-400 rounded-lg mt-4">
+      <h3 className="text-2xl font-semibold mb-5">Finish this Ride</h3>
+      <div className="flex items-center justify-between p-4 border-2 border-yellow-400 rounded-lg mt-4">
         <div className="flex items-center gap-3 ">
           <img
             className="h-12 rounded-full object-cover w-12"
@@ -25,9 +41,7 @@ const RidePopUp = (props) => {
             alt=""
           />
           <h2 className="text-lg font-medium">
-            {ride?.user.fullName.firstName +
-              " " +
-              ride?.user.fullName.lastName}
+            {props.ride?.user.fullName.firstName}
           </h2>
         </div>
         <h5 className="text-lg font-semibold">2.2 KM</h5>
@@ -60,45 +74,32 @@ const RidePopUp = (props) => {
             </div>
           </div>
         </div>
-        <div className="mt-5 w-full ">
-          <button
-            onClick={() => {
-              props.setConfirmRidePopupPanel(true);
-              props.confirmRide();
-            }}
-            className=" bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg"
-          >
-            Accept
-          </button>
 
+        <div className="mt-10 w-full">
           <button
-            onClick={() => {
-              props.setRidePopupPanel(false);
-            }}
-            className="mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg"
+            onClick={endRide}
+            className="w-full mt-5 flex  text-lg justify-center bg-green-600 text-white font-semibold p-3 rounded-lg"
           >
-            Ignore
+            Finish Ride
           </button>
         </div>
       </div>
     </div>
   );
 };
-RidePopUp.propTypes = {
-  setRidePopupPanel: PropTypes.func.isRequired,
-  setConfirmRidePopupPanel: PropTypes.func.isRequired,
-  confirmRide: PropTypes.func.isRequired,
+FinishRide.propTypes = {
   ride: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
     user: PropTypes.shape({
       fullName: PropTypes.shape({
         firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
-    pickup: PropTypes.string.isRequired,
-    destination: PropTypes.string.isRequired,
-    fare: PropTypes.number.isRequired,
+    pickup: PropTypes.string,
+    destination: PropTypes.string,
+    fare: PropTypes.number,
   }).isRequired,
+  setFinishRidePanel: PropTypes.func.isRequired,
 };
 
-export default RidePopUp;
+export default FinishRide;
